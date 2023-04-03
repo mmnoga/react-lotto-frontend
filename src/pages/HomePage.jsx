@@ -1,9 +1,9 @@
 export default function HomePage() {
     return (
         <div className="HomePage">
-            <h1>Home Page</h1>
+            <h1>Lotto Game Application</h1>
             <div>
-                Home Page Content...
+                Try you luck and play Lotto Game.
             </div>
         </div>
     )
