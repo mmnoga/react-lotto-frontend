@@ -17,32 +17,32 @@ export default function GamePage() {
             .catch(error => console.log(error))
     }
 
-    function validate(values) {
+    const validate = (values) => {
         let errors = {}
 
         if (Number(values.num1) < 1 || Number(values.num1 > 99)
         ) {
-            errors.num1 = '#1 must be at range 1 to 99'
+            errors.num1 = '#1 must be in range 1 to 99'
         }
         if (Number(values.num2) < 1 || Number(values.num2 > 99)
         ) {
-            errors.num2 = '#2 must be at range 1 to 99'
+            errors.num2 = '#2 must be in range 1 to 99'
         }
         if (Number(values.num3) < 1 || Number(values.num3 > 99)
         ) {
-            errors.num3 = '#3 must be at range 1 to 99'
+            errors.num3 = '#3 must be in range 1 to 99'
         }
         if (Number(values.num4) < 1 || Number(values.num4 > 99)
         ) {
-            errors.num4 = '#4 must be at range 1 to 99'
+            errors.num4 = '#4 must be in range 1 to 99'
         }
         if (Number(values.num5) < 1 || Number(values.num5 > 99)
         ) {
-            errors.num5 = '#5 must be at range 1 to 99'
+            errors.num5 = '#5 must be in range 1 to 99'
         }
         if (Number(values.num6) < 1 || Number(values.num6 > 99)
         ) {
-            errors.num6 = '#6 must be at range 1 to 99'
+            errors.num6 = '#6 must be in range 1 to 99'
         }
 
         if (values.num1 === '') {
@@ -86,10 +86,13 @@ export default function GamePage() {
         return errors
     }
 
-    function checkDuplicate(obj, value, id) {
+    const checkDuplicate = (obj, value, id) => {
         let numbers = Object.values(obj)
         numbers[id] = ''
-        return numbers.includes(value)
+        if (value) {
+            return numbers.includes(value)
+        }
+        return false
     }
 
     return (
@@ -108,7 +111,7 @@ export default function GamePage() {
                         enableReinitialize={true}
                         onSubmit={onSubmit}
                         validate={validate}
-                        validateOnChang={false}
+                        validateOnChange={false}
                         validateOnBlur={false}
                     >
                         {
