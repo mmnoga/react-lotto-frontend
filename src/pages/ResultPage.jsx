@@ -1,10 +1,50 @@
+import {useState} from "react";
+import {checkResult} from "../api/LottoApiService";
+import TicketComponent from "../components/TicketComponent";
+import ResultComponent from "../components/ResultComponent";
+
 export default function ResultPage() {
+
+    const [ticketId, setTicketId] = useState("")
+    const [result, setResult] = useState(null)
+    const onSubmit = (e) => {
+        e.preventDefault();
+        checkResult(ticketId)
+            .then(response => {
+                // console.log(response)
+                setResult(response.data)
+            })
+            .catch(error => console.log(error))
+    }
+
     return (
         <div className="ResultPage">
-            <h1>Result Page</h1>
-            <div>
-                Result Page Content...
-            </div>
+            <h1>Results</h1>
+            {!result && (
+                <form onSubmit={onSubmit}>
+                    <div className="row">
+                        <div className="col m-4">
+                            <div>Enter ticket ID:</div>
+                        </div>
+                    </div>
+                    <div className="row align-items-center">
+                        <div className="col-9">
+                            <input type="text" name="ticketId" className="form-control" placeholder="ticket ID"
+                                   value={ticketId} onChange={(e) => setTicketId(e.target.value)}/>
+                        </div>
+                        <div className="col-3">
+                            <button className="btn btn-success" type="submit">Check Result</button>
+                        </div>
+                    </div>
+                </form>
+            )}
+            {result && (
+                <div className="m-5">
+                    {result && <ResultComponent result={result}/>}
+                </div>
+            )}
+
+
         </div>
     )
 }
