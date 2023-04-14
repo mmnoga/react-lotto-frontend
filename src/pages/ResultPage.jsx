@@ -1,26 +1,32 @@
 import {useState} from "react";
 import {checkResult} from "../api/LottoApiService";
-import TicketComponent from "../components/TicketComponent";
 import ResultComponent from "../components/ResultComponent";
+import TicketNotFoundComponent from "../components/TicketNotFoundComponent";
 
 export default function ResultPage() {
 
     const [ticketId, setTicketId] = useState("")
     const [result, setResult] = useState(null)
+    const [errorMessage, setErrorMessage] = useState(null)
+
     const onSubmit = (e) => {
         e.preventDefault();
         checkResult(ticketId)
             .then(response => {
-                // console.log(response)
                 setResult(response.data)
             })
-            .catch(error => console.log(error))
+            .catch(error => {
+                    setErrorMessage(error.response.data.message)
+                }
+            )
     }
 
     return (
         <div className="ResultPage">
+
             <h1>Results</h1>
-            {!result && (
+
+            {!result && !errorMessage && (
                 <form onSubmit={onSubmit}>
                     <div className="row">
                         <div className="col m-4">
@@ -38,12 +44,18 @@ export default function ResultPage() {
                     </div>
                 </form>
             )}
+
             {result && (
                 <div className="m-5">
                     {result && <ResultComponent result={result}/>}
                 </div>
             )}
 
+            {errorMessage && (
+                <div className="m-5">
+                    <TicketNotFoundComponent message={errorMessage}/>
+                </div>
+            )}
 
         </div>
     )
