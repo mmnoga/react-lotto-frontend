@@ -6,7 +6,8 @@ export default function HeaderComponent() {
             <div className="container">
                 <div className="row">
                     <nav className="navbar navbar-expand">
-                        <a className="navbar-brand ms-2 fs-2 fw-bold text-black" href="#">LottoGameApp</a>
+                        <a className="navbar-brand ms-2 fs-2 fw-bold text-black"
+                           href="https://github.com/mmnoga">LottoGameApp</a>
                         <div className="collapse navbar-collapse">
                             <ul className="navbar-nav">
                                 <li className="nav-item fs-5"><Link className="nav-link" to="/">Home</Link></li>

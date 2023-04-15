@@ -1,4 +1,4 @@
-import {createTicketApi} from "../api/LottoApiService";
+import ApiService from "../api/ApiService";
 import {useState} from "react";
 import {ErrorMessage, Field, Form, Formik} from "formik";
 import TicketComponent from "../components/TicketComponent";
@@ -6,15 +6,20 @@ import TicketComponent from "../components/TicketComponent";
 export default function GamePage() {
 
     const [ticket, setTicket] = useState(null)
+
+    const createTicket = async (ticketId) => {
+        try {
+            const response = await ApiService.createTicket(ticketId)
+            setTicket((response.data))
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
     const onSubmit = (values) => {
         const queryParam = values.num1 + ',' + values.num2 + ',' + values.num3 + ','
             + values.num4 + ',' + values.num5 + ',' + values.num6
-
-        createTicketApi(queryParam)
-            .then(response => {
-                setTicket(response.data)
-            })
-            .catch(error => console.log(error))
+        createTicket(queryParam);
     }
 
     const validate = (values) => {
@@ -96,7 +101,7 @@ export default function GamePage() {
     }
 
     return (
-        <div className="GamePage">
+        <div className="GamePage bg-light pb-2 pt-4 text-center rounded">
             <h1>Lotto Game</h1>
 
             {!ticket && (
@@ -123,33 +128,36 @@ export default function GamePage() {
                                     <ErrorMessage name="num4" component="div" className="alert alert-warning"/>
                                     <ErrorMessage name="num5" component="div" className="alert alert-warning"/>
                                     <ErrorMessage name="num6" component="div" className="alert alert-warning"/>
-                                    <div className="row">
-                                        <div className="col">
-                                            <Field type="number" className="form-control" name="num1"
-                                                   placeholder="#1"/>
-                                        </div>
-                                        <div className="col">
-                                            <Field type="number" className="form-control" name="num2"
-                                                   placeholder="#2"/>
-                                        </div>
-                                        <div className="col">
-                                            <Field type="number" className="form-control" name="num3"
-                                                   placeholder="#3"/>
-                                        </div>
-                                        <div className="col">
-                                            <Field type="number" className="form-control" name="num4"
-                                                   placeholder="#4"/>
-                                        </div>
-                                        <div className="col">
-                                            <Field type="number" className="form-control" name="num5"
-                                                   placeholder="#5"/>
-                                        </div>
-                                        <div className="col">
-                                            <Field type="number" className="form-control" name="num6"
-                                                   placeholder="#6"/>
-                                        </div>
-                                        <div className="col">
-                                            <button className="btn btn-success" type="submit">Ticket</button>
+
+                                    <div className="d-flex justify-content-center">
+                                        <div className="input-group w-75 flex-nowrap">
+                                            <div className="m-1 input-group">
+                                                <Field type="number" className="form-control" name="num1"
+                                                       placeholder="#1"/>
+                                            </div>
+                                            <div className="m-1 input-group">
+                                                <Field type="number" className="form-control" name="num2"
+                                                       placeholder="#2"/>
+                                            </div>
+                                            <div className="m-1 input-group">
+                                                <Field type="number" className="form-control" name="num3"
+                                                       placeholder="#3"/>
+                                            </div>
+                                            <div className="m-1 input-group">
+                                                <Field type="number" className="form-control" name="num4"
+                                                       placeholder="#4"/>
+                                            </div>
+                                            <div className="m-1 input-group">
+                                                <Field type="number" className="form-control" name="num5"
+                                                       placeholder="#5"/>
+                                            </div>
+                                            <div className="m-1 input-group">
+                                                <Field type="number" className="form-control" name="num6"
+                                                       placeholder="#6"/>
+                                            </div>
+                                            <div className="m-1 input-group">
+                                                <button className="btn btn-success" type="submit button">Ticket</button>
+                                            </div>
                                         </div>
                                     </div>
                                 </Form>

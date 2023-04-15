@@ -1,5 +1,5 @@
 import {useState} from "react";
-import {checkResult} from "../api/LottoApiService";
+import ApiService from "../api/ApiService";
 import ResultComponent from "../components/ResultComponent";
 import TicketNotFoundComponent from "../components/TicketNotFoundComponent";
 
@@ -9,20 +9,21 @@ export default function ResultPage() {
     const [result, setResult] = useState(null)
     const [errorMessage, setErrorMessage] = useState(null)
 
+    const checkResult = async () => {
+        try {
+            const response = await ApiService.checkResult(ticketId)
+            setResult((response.data))
+        } catch (error) {
+            setErrorMessage(error.response.data.message)
+        }
+    }
     const onSubmit = (e) => {
         e.preventDefault();
-        checkResult(ticketId)
-            .then(response => {
-                setResult(response.data)
-            })
-            .catch(error => {
-                    setErrorMessage(error.response.data.message)
-                }
-            )
+        checkResult();
     }
 
     return (
-        <div className="ResultPage">
+        <div className="ResultPage bg-light pb-5 pt-4 text-center rounded">
 
             <h1>Results</h1>
 
@@ -33,13 +34,12 @@ export default function ResultPage() {
                             <div>Enter ticket ID:</div>
                         </div>
                     </div>
-                    <div className="row align-items-center">
-                        <div className="col-9">
-                            <input type="text" name="ticketId" className="form-control" placeholder="ticket ID"
+                    <div className="d-flex justify-content-center">
+                        <div className="input-group w-75">
+                            <input type="text" name="ticketId" className="form-control"
+                                   placeholder="ticket ID"
                                    value={ticketId} onChange={(e) => setTicketId(e.target.value)}/>
-                        </div>
-                        <div className="col-3">
-                            <button className="btn btn-success" type="submit">Check Result</button>
+                            <button className="btn btn-success" type="submit button">Check Result</button>
                         </div>
                     </div>
                 </form>
