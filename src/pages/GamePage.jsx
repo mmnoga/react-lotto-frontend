@@ -1,176 +1,102 @@
-import ApiService from "../api/ApiService";
-import {useState} from "react";
-import {ErrorMessage, Field, Form, Formik} from "formik";
-import TicketComponent from "../components/TicketComponent";
+import React, {useState} from "react";
+import useApiService from "../api/useApiService";
+import {useNavigate} from "react-router-dom";
 
-export default function GamePage() {
+const GamePage = () => {
+    const navigate = useNavigate();
+    const [inputValues, setInputValues] = useState([1, 2, 3, 4, 5, 6]);
+    const [formError, setFormError] = useState(null);
 
-    const [ticket, setTicket] = useState(null)
+    const {sendNumbers} = useApiService()
 
-    const createTicket = async (ticketId) => {
-        try {
-            const response = await ApiService.createTicket(ticketId)
-            setTicket((response.data))
-        } catch (error) {
-            console.log(error)
-        }
-    }
+    const handleInputChange = (event, index) => {
+        const value = Number(event.target.value);
+        setInputValues((prevValues) => {
+            const newValues = [...prevValues];
+            newValues[index] = value;
+            return newValues;
+        });
+    };
 
-    const onSubmit = (values) => {
-        const queryParam = values.num1 + ',' + values.num2 + ',' + values.num3 + ','
-            + values.num4 + ',' + values.num5 + ',' + values.num6
-        createTicket(queryParam);
-    }
+    const handleRandomClick = () => {
+        const newValues = [];
+        for (let i = 0; i < 6; i++) {
+            let randomNumber = Math.floor(Math.random() * 99) + 1;
+            while (newValues.includes(randomNumber)) {
+                randomNumber = Math.floor(Math.random() * 99) + 1;
+            }
+            newValues.push(randomNumber);
+        }
+        setInputValues(newValues);
+        setFormError(null);
+    };
 
-    const validate = (values) => {
-        let errors = {}
+    const handleSubmit = async (event) => {
+        event.preventDefault();
+        const uniqueValues = Array.from(new Set(inputValues));
 
-        if (Number(values.num1) < 1 || Number(values.num1 > 99)
-        ) {
-            errors.num1 = '#1 must be in range 1 to 99'
+        if (uniqueValues.length !== 6) {
+            setFormError("Please enter 6 unique numbers from 1 to 99.");
+            return;
         }
-        if (Number(values.num2) < 1 || Number(values.num2 > 99)
-        ) {
-            errors.num2 = '#2 must be in range 1 to 99'
+        for (let i = 0; i < 6; i++) {
+            if (inputValues[i] < 1 || inputValues[i] > 99) {
+                setFormError("Please enter numbers between 1 and 99.");
+                return;
+            }
         }
-        if (Number(values.num3) < 1 || Number(values.num3 > 99)
-        ) {
-            errors.num3 = '#3 must be in range 1 to 99'
-        }
-        if (Number(values.num4) < 1 || Number(values.num4 > 99)
-        ) {
-            errors.num4 = '#4 must be in range 1 to 99'
-        }
-        if (Number(values.num5) < 1 || Number(values.num5 > 99)
-        ) {
-            errors.num5 = '#5 must be in range 1 to 99'
-        }
-        if (Number(values.num6) < 1 || Number(values.num6 > 99)
-        ) {
-            errors.num6 = '#6 must be in range 1 to 99'
-        }
+        setFormError(null);
+        await sendNumbers(uniqueValues)
 
-        if (values.num1 === '') {
-            errors.num1 = '#1 must not be null'
-        }
-        if (values.num2 === '') {
-            errors.num2 = '#2 must not be null'
-        }
-        if (values.num3 === '') {
-            errors.num3 = '#3 must not be null'
-        }
-        if (values.num4 === '') {
-            errors.num4 = '#4 must not be null'
-        }
-        if (values.num5 === '') {
-            errors.num5 = '#5 must not be null'
-        }
-        if (values.num6 === '') {
-            errors.num6 = '#6 must not be null'
-        }
-
-        if (checkDuplicate(values, values.num1, 0)) {
-            errors.num1 = "#1 cannot be repeated"
-        }
-        if (checkDuplicate(values, values.num2, 1)) {
-            errors.num2 = "#2 cannot be repeated"
-        }
-        if (checkDuplicate(values, values.num3, 2)) {
-            errors.num3 = "#3 cannot be repeated"
-        }
-        if (checkDuplicate(values, values.num4, 3)) {
-            errors.num4 = "#4 cannot be repeated"
-        }
-        if (checkDuplicate(values, values.num5, 4)) {
-            errors.num5 = "#5 cannot be repeated"
-        }
-        if (checkDuplicate(values, values.num6, 5)) {
-            errors.num6 = "#6 cannot be repeated"
-        }
-
-        return errors
-    }
-
-    const checkDuplicate = (obj, value, id) => {
-        let numbers = Object.values(obj)
-        numbers[id] = ''
-        if (value) {
-            return numbers.includes(value)
-        }
-        return false
-    }
+        navigate('/ticket')
+    };
 
     return (
-        <div className="GamePage bg-light pb-2 pt-4 text-center rounded">
-            <h1>Lotto Game</h1>
+        <div className="container mt-5 bg-light pb-2 pt-4 text-center rounded">
+            <div className="row">
+                <div className="col-md-6 offset-md-3">
+                    <form onSubmit={handleSubmit}>
 
-            {!ticket && (
-                <div>
-                    <div className="col m-4">
-                        <div>Input 6 numbers (from 1 to 99):</div>
-                    </div>
-                    <Formik
-                        initialValues={{
-                            num1: '', num2: '', num3: '', num4: '', num5: '', num6: ''
-                        }}
-                        enableReinitialize={true}
-                        onSubmit={onSubmit}
-                        validate={validate}
-                        validateOnChange={false}
-                        validateOnBlur={false}
-                    >
-                        {
-                            (props) => (
-                                <Form>
-                                    <ErrorMessage name="num1" component="div" className="alert alert-warning"/>
-                                    <ErrorMessage name="num2" component="div" className="alert alert-warning"/>
-                                    <ErrorMessage name="num3" component="div" className="alert alert-warning"/>
-                                    <ErrorMessage name="num4" component="div" className="alert alert-warning"/>
-                                    <ErrorMessage name="num5" component="div" className="alert alert-warning"/>
-                                    <ErrorMessage name="num6" component="div" className="alert alert-warning"/>
+                        <h2 className="mb-3">Play Lotto Game</h2>
+                        <div className="mb-4">Input 6 numbers (form 1 to 99)</div>
 
-                                    <div className="d-flex justify-content-center">
-                                        <div className="input-group w-75 flex-nowrap">
-                                            <div className="m-1 input-group">
-                                                <Field type="number" className="form-control" name="num1"
-                                                       placeholder="#1"/>
-                                            </div>
-                                            <div className="m-1 input-group">
-                                                <Field type="number" className="form-control" name="num2"
-                                                       placeholder="#2"/>
-                                            </div>
-                                            <div className="m-1 input-group">
-                                                <Field type="number" className="form-control" name="num3"
-                                                       placeholder="#3"/>
-                                            </div>
-                                            <div className="m-1 input-group">
-                                                <Field type="number" className="form-control" name="num4"
-                                                       placeholder="#4"/>
-                                            </div>
-                                            <div className="m-1 input-group">
-                                                <Field type="number" className="form-control" name="num5"
-                                                       placeholder="#5"/>
-                                            </div>
-                                            <div className="m-1 input-group">
-                                                <Field type="number" className="form-control" name="num6"
-                                                       placeholder="#6"/>
-                                            </div>
-                                            <div className="m-1 input-group">
-                                                <button className="btn btn-success" type="submit button">Ticket</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </Form>
-                            )
-                        }
-                    </Formik>
+                        {formError && (
+                            <div className="alert alert-danger" role="alert">
+                                {formError}
+                            </div>
+                        )}
+                        <div className="d-flex flex-nowrap gap-2 justify-content-center">
+                            {inputValues.map((value, index) => (
+                                <div key={index} className="mb-3">
+                                    <input
+                                        type="number"
+                                        className="form-control text-center"
+                                        min="1"
+                                        max="99"
+                                        value={value}
+                                        onChange={(event) => handleInputChange(event, index)}
+
+                                    />
+                                </div>
+                            ))}
+                        </div>
+                        <div className="mb-3">
+                            <button
+                                type="button"
+                                className="btn btn-primary me-2"
+                                onClick={handleRandomClick}
+                            >
+                                Random
+                            </button>
+                            <button type="submit" className="btn btn-primary">
+                                Ticket
+                            </button>
+                        </div>
+                    </form>
                 </div>
-            )}
-
-            <div className="m-5">
-                {ticket && <TicketComponent ticket={ticket}/>}
             </div>
-
         </div>
-    )
-}
+    );
+};
+export default GamePage;
+
