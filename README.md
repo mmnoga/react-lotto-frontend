@@ -7,6 +7,8 @@ Player checks game results using ticket ID.
 []()
 ### Languages
 This project was created with [React](https://react.dev/boo), [JavaScript](https://www.javascript.com/), [Formik](https://formik.org/) library and [Bootstrap](https://getbootstrap.com/).
+### Live demo
+[Link...](http://ec2-18-159-208-227.eu-central-1.compute.amazonaws.com/)
 ### Screens
 ![Alt text](public/lotto_screen.jpg "Lotto App Screen")
 ![Alt text](public/lotto_screen2.jpg "Lotto App Screen")
