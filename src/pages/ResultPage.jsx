@@ -1,62 +1,48 @@
-import {useState} from "react";
-import ApiService from "../api/ApiService";
-import ResultComponent from "../components/ResultComponent";
+import useApiService from "../api/useApiService";
 import TicketNotFoundComponent from "../components/TicketNotFoundComponent";
 
 export default function ResultPage() {
-
-    const [ticketId, setTicketId] = useState("")
-    const [result, setResult] = useState(null)
-    const [errorMessage, setErrorMessage] = useState(null)
-
-    const checkResult = async () => {
-        try {
-            const response = await ApiService.checkResult(ticketId)
-            setResult((response.data))
-        } catch (error) {
-            setErrorMessage(error.response.data.message)
-        }
-    }
-    const onSubmit = (e) => {
-        e.preventDefault();
-        checkResult();
-    }
+    const {result, error} = useApiService()
 
     return (
-        <div className="ResultPage bg-light pb-5 pt-4 text-center rounded">
+        <>
+            {error && <TicketNotFoundComponent/>}
 
-            <h1>Results</h1>
+            {result && !error && (
+                <div className="container mt-5 p-3 alert alert-success text-center rounded">
+                    <>
+                        <h2 className="mb-4">Your Result</h2>
+                        <p>
+                            <span>Ticket Id.: </span>
+                            <span className="fw-bold">{result.ticketId}</span>
+                        </p>
+                        <p>
+                            <span>Numbers: </span>
+                            <span className="fw-bold">{result.playerNumbers.map(number => <span
+                                key={number}>{number}  </span>)}</span>
+                        </p>
+                        <p>
+                            <span>Draw date: </span>
+                            <span className="fw-bold">{result.drawDate}</span>
+                        </p>
+                        <p>
+                            <span>Lotto numbers: </span>
+                            <span className="fw-bold">{result.winningNumbers.map(number => <span
+                                key={number}>{number}  </span>)}</span>
+                        </p>
+                        <p>
+                            <span>Hits: </span>
+                            <span className="fw-bold">{result.hitNumber}</span>
+                        </p>
+                        {result.hitNumber > 3 ? (
+                            <p className="fs-4 fst-italic">Congratulations!!!</p>
+                        ) : (
+                            <p className="fs-4 fst-italic">Please try again!</p>
+                        )}
 
-            {!result && !errorMessage && (
-                <form onSubmit={onSubmit}>
-                    <div className="row">
-                        <div className="col m-4">
-                            <div>Enter ticket ID:</div>
-                        </div>
-                    </div>
-                    <div className="d-flex justify-content-center">
-                        <div className="input-group w-75">
-                            <input type="text" name="ticketId" className="form-control"
-                                   placeholder="ticket ID"
-                                   value={ticketId} onChange={(e) => setTicketId(e.target.value)}/>
-                            <button className="btn btn-success" type="submit button">Check Result</button>
-                        </div>
-                    </div>
-                </form>
-            )}
-
-            {result && (
-                <div className="m-5">
-                    {result && <ResultComponent result={result}/>}
+                    </>
                 </div>
             )}
-
-            {errorMessage && (
-                <div className="m-5">
-                    <TicketNotFoundComponent message={errorMessage}/>
-                </div>
-            )}
-
-        </div>
+        </>
     )
 }

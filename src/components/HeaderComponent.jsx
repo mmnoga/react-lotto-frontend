@@ -12,7 +12,7 @@ export default function HeaderComponent() {
                             <ul className="navbar-nav">
                                 <li className="nav-item fs-5"><Link className="nav-link" to="/">Home</Link></li>
                                 <li className="nav-item fs-5"><Link className="nav-link" to="/game">Game</Link></li>
-                                <li className="nav-item fs-5"><Link className="nav-link" to="/result">Result</Link></li>
+                                <li className="nav-item fs-5"><Link className="nav-link" to="/check-result">Result</Link></li>
                             </ul>
                         </div>
                     </nav>

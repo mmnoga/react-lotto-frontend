@@ -1,4 +1,4 @@
-export default function TicketComponent({ticket}) {
+function TicketComponent({ticket}) {
     return (
         <div className="TicketComponent alert alert-success">
             <p>
